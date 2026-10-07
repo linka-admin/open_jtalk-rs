@@ -4,8 +4,8 @@ project(OpenJtalkSys)
 include(FetchContent)
 FetchContent_Declare(
   openjtalk
-  GIT_REPOSITORY https://github.com/VOICEVOX/open_jtalk.git
-  GIT_TAG 1.11
+  GIT_REPOSITORY https://github.com/linka-admin/open_jtalk.git
+  GIT_TAG f84f40d8eb7510d498f4094ab17b3699c85776bb # tsukumijima/open_jtalk 1.11 branch
   SOURCE_SUBDIR src)
 FetchContent_MakeAvailable(openjtalk)
 
