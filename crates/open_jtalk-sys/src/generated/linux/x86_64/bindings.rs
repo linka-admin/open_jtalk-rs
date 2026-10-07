@@ -141,6 +141,11 @@ pub struct mecab_node_t {
     pub stat: ::std::os::raw::c_uchar,
     /// set 1 if this node is best node.
     pub isbest: ::std::os::raw::c_uchar,
+    /** dictionary index in tokenizer load order.
+ 0 is the system dictionary, 1..N identify user dictionaries in the order
+ supplied by --userdic, and MECAB_NO_DICTIONARY_INDEX identifies a
+ non-dictionary control or unknown node.*/
+    pub dictionary_index: ::std::os::raw::c_uchar,
     /** forward accumulative log summation.
  This value is only available when MECAB_MARGINAL_PROB is passed.*/
     pub alpha: f32,
@@ -211,6 +216,9 @@ const _: () = {
         "Offset of field: mecab_node_t::isbest",
     ][::std::mem::offset_of!(mecab_node_t, isbest) - 80usize];
     [
+        "Offset of field: mecab_node_t::dictionary_index",
+    ][::std::mem::offset_of!(mecab_node_t, dictionary_index) - 81usize];
+    [
         "Offset of field: mecab_node_t::alpha",
     ][::std::mem::offset_of!(mecab_node_t, alpha) - 84usize];
     [
@@ -246,13 +254,20 @@ pub enum _bindgen_ty_1 {
     /// Virtual node representing a end of the N-best enumeration.
     MECAB_EON_NODE = 4,
 }
-pub const MECAB_SYS_DIC: _bindgen_ty_2 = _bindgen_ty_2::MECAB_SYS_DIC;
-pub const MECAB_USR_DIC: _bindgen_ty_2 = _bindgen_ty_2::MECAB_USR_DIC;
-pub const MECAB_UNK_DIC: _bindgen_ty_2 = _bindgen_ty_2::MECAB_UNK_DIC;
+pub const MECAB_NO_DICTIONARY_INDEX: _bindgen_ty_2 = _bindgen_ty_2::MECAB_NO_DICTIONARY_INDEX;
+#[repr(u32)]
+/// Dictionary provenance assigned to nodes not read from a dictionary.
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum _bindgen_ty_2 {
+    MECAB_NO_DICTIONARY_INDEX = 255,
+}
+pub const MECAB_SYS_DIC: _bindgen_ty_3 = _bindgen_ty_3::MECAB_SYS_DIC;
+pub const MECAB_USR_DIC: _bindgen_ty_3 = _bindgen_ty_3::MECAB_USR_DIC;
+pub const MECAB_UNK_DIC: _bindgen_ty_3 = _bindgen_ty_3::MECAB_UNK_DIC;
 #[repr(u32)]
 /// Parameters for MeCab::DictionaryInfo::type
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
-pub enum _bindgen_ty_2 {
+pub enum _bindgen_ty_3 {
     /// This is a system dictionary.
     MECAB_SYS_DIC = 0,
     /// This is a user dictionary.
@@ -260,17 +275,17 @@ pub enum _bindgen_ty_2 {
     /// This is a unknown word dictionary.
     MECAB_UNK_DIC = 2,
 }
-pub const MECAB_ONE_BEST: _bindgen_ty_3 = _bindgen_ty_3::MECAB_ONE_BEST;
-pub const MECAB_NBEST: _bindgen_ty_3 = _bindgen_ty_3::MECAB_NBEST;
-pub const MECAB_PARTIAL: _bindgen_ty_3 = _bindgen_ty_3::MECAB_PARTIAL;
-pub const MECAB_MARGINAL_PROB: _bindgen_ty_3 = _bindgen_ty_3::MECAB_MARGINAL_PROB;
-pub const MECAB_ALTERNATIVE: _bindgen_ty_3 = _bindgen_ty_3::MECAB_ALTERNATIVE;
-pub const MECAB_ALL_MORPHS: _bindgen_ty_3 = _bindgen_ty_3::MECAB_ALL_MORPHS;
-pub const MECAB_ALLOCATE_SENTENCE: _bindgen_ty_3 = _bindgen_ty_3::MECAB_ALLOCATE_SENTENCE;
+pub const MECAB_ONE_BEST: _bindgen_ty_4 = _bindgen_ty_4::MECAB_ONE_BEST;
+pub const MECAB_NBEST: _bindgen_ty_4 = _bindgen_ty_4::MECAB_NBEST;
+pub const MECAB_PARTIAL: _bindgen_ty_4 = _bindgen_ty_4::MECAB_PARTIAL;
+pub const MECAB_MARGINAL_PROB: _bindgen_ty_4 = _bindgen_ty_4::MECAB_MARGINAL_PROB;
+pub const MECAB_ALTERNATIVE: _bindgen_ty_4 = _bindgen_ty_4::MECAB_ALTERNATIVE;
+pub const MECAB_ALL_MORPHS: _bindgen_ty_4 = _bindgen_ty_4::MECAB_ALL_MORPHS;
+pub const MECAB_ALLOCATE_SENTENCE: _bindgen_ty_4 = _bindgen_ty_4::MECAB_ALLOCATE_SENTENCE;
 #[repr(u32)]
 /// Parameters for MeCab::Lattice::request_type
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
-pub enum _bindgen_ty_3 {
+pub enum _bindgen_ty_4 {
     /// One best result is obtained (default mode)
     MECAB_ONE_BEST = 1,
     /// Set this flag if you want to obtain N best results.
@@ -293,13 +308,13 @@ pub enum _bindgen_ty_3 {
  sentence into internal buffer.*/
     MECAB_ALLOCATE_SENTENCE = 64,
 }
-pub const MECAB_ANY_BOUNDARY: _bindgen_ty_4 = _bindgen_ty_4::MECAB_ANY_BOUNDARY;
-pub const MECAB_TOKEN_BOUNDARY: _bindgen_ty_4 = _bindgen_ty_4::MECAB_TOKEN_BOUNDARY;
-pub const MECAB_INSIDE_TOKEN: _bindgen_ty_4 = _bindgen_ty_4::MECAB_INSIDE_TOKEN;
+pub const MECAB_ANY_BOUNDARY: _bindgen_ty_5 = _bindgen_ty_5::MECAB_ANY_BOUNDARY;
+pub const MECAB_TOKEN_BOUNDARY: _bindgen_ty_5 = _bindgen_ty_5::MECAB_TOKEN_BOUNDARY;
+pub const MECAB_INSIDE_TOKEN: _bindgen_ty_5 = _bindgen_ty_5::MECAB_INSIDE_TOKEN;
 #[repr(u32)]
 /// Parameters for MeCab::Lattice::boundary_constraint_type
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
-pub enum _bindgen_ty_4 {
+pub enum _bindgen_ty_5 {
     /// The token boundary is not specified.
     MECAB_ANY_BOUNDARY = 0,
     /// The position is a strong token boundary.
@@ -524,6 +539,13 @@ extern "C" {
 extern "C" {
     /// C wrapper of MeCab::Tagger::parse(MeCab::Lattice *lattice)
     pub fn mecab_parse_lattice(
+        mecab: *mut mecab_t,
+        lattice: *mut mecab_lattice_t,
+    ) -> ::std::os::raw::c_int;
+}
+extern "C" {
+    /// Rebuild one-best path from existing lattice nodes.
+    pub fn mecab_lattice_rebuild_best(
         mecab: *mut mecab_t,
         lattice: *mut mecab_lattice_t,
     ) -> ::std::os::raw::c_int;
@@ -1645,6 +1667,7 @@ pub type JPCommonLabelWord = _JPCommonLabelWord;
 pub struct _JPCommonLabelAccentPhrase {
     pub accent: ::std::os::raw::c_int,
     pub emotion: *mut ::std::os::raw::c_char,
+    pub excl: *mut ::std::os::raw::c_char,
     pub head: *mut _JPCommonLabelWord,
     pub tail: *mut _JPCommonLabelWord,
     pub prev: *mut _JPCommonLabelAccentPhrase,
@@ -1655,7 +1678,7 @@ pub struct _JPCommonLabelAccentPhrase {
 const _: () = {
     [
         "Size of _JPCommonLabelAccentPhrase",
-    ][::std::mem::size_of::<_JPCommonLabelAccentPhrase>() - 56usize];
+    ][::std::mem::size_of::<_JPCommonLabelAccentPhrase>() - 64usize];
     [
         "Alignment of _JPCommonLabelAccentPhrase",
     ][::std::mem::align_of::<_JPCommonLabelAccentPhrase>() - 8usize];
@@ -1666,20 +1689,23 @@ const _: () = {
         "Offset of field: _JPCommonLabelAccentPhrase::emotion",
     ][::std::mem::offset_of!(_JPCommonLabelAccentPhrase, emotion) - 8usize];
     [
+        "Offset of field: _JPCommonLabelAccentPhrase::excl",
+    ][::std::mem::offset_of!(_JPCommonLabelAccentPhrase, excl) - 16usize];
+    [
         "Offset of field: _JPCommonLabelAccentPhrase::head",
-    ][::std::mem::offset_of!(_JPCommonLabelAccentPhrase, head) - 16usize];
+    ][::std::mem::offset_of!(_JPCommonLabelAccentPhrase, head) - 24usize];
     [
         "Offset of field: _JPCommonLabelAccentPhrase::tail",
-    ][::std::mem::offset_of!(_JPCommonLabelAccentPhrase, tail) - 24usize];
+    ][::std::mem::offset_of!(_JPCommonLabelAccentPhrase, tail) - 32usize];
     [
         "Offset of field: _JPCommonLabelAccentPhrase::prev",
-    ][::std::mem::offset_of!(_JPCommonLabelAccentPhrase, prev) - 32usize];
+    ][::std::mem::offset_of!(_JPCommonLabelAccentPhrase, prev) - 40usize];
     [
         "Offset of field: _JPCommonLabelAccentPhrase::next",
-    ][::std::mem::offset_of!(_JPCommonLabelAccentPhrase, next) - 40usize];
+    ][::std::mem::offset_of!(_JPCommonLabelAccentPhrase, next) - 48usize];
     [
         "Offset of field: _JPCommonLabelAccentPhrase::up",
-    ][::std::mem::offset_of!(_JPCommonLabelAccentPhrase, up) - 48usize];
+    ][::std::mem::offset_of!(_JPCommonLabelAccentPhrase, up) - 56usize];
 };
 pub type JPCommonLabelAccentPhrase = _JPCommonLabelAccentPhrase;
 #[repr(C)]
@@ -1717,6 +1743,7 @@ pub type JPCommonLabelBreathGroup = _JPCommonLabelBreathGroup;
 pub struct _JPCommonLabel {
     pub size: ::std::os::raw::c_int,
     pub feature: *mut *mut ::std::os::raw::c_char,
+    pub is_valid: ::std::os::raw::c_int,
     pub breath_head: *mut JPCommonLabelBreathGroup,
     pub breath_tail: *mut JPCommonLabelBreathGroup,
     pub accent_head: *mut JPCommonLabelAccentPhrase,
@@ -1731,7 +1758,7 @@ pub struct _JPCommonLabel {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of _JPCommonLabel"][::std::mem::size_of::<_JPCommonLabel>() - 104usize];
+    ["Size of _JPCommonLabel"][::std::mem::size_of::<_JPCommonLabel>() - 112usize];
     ["Alignment of _JPCommonLabel"][::std::mem::align_of::<_JPCommonLabel>() - 8usize];
     [
         "Offset of field: _JPCommonLabel::size",
@@ -1740,38 +1767,41 @@ const _: () = {
         "Offset of field: _JPCommonLabel::feature",
     ][::std::mem::offset_of!(_JPCommonLabel, feature) - 8usize];
     [
+        "Offset of field: _JPCommonLabel::is_valid",
+    ][::std::mem::offset_of!(_JPCommonLabel, is_valid) - 16usize];
+    [
         "Offset of field: _JPCommonLabel::breath_head",
-    ][::std::mem::offset_of!(_JPCommonLabel, breath_head) - 16usize];
+    ][::std::mem::offset_of!(_JPCommonLabel, breath_head) - 24usize];
     [
         "Offset of field: _JPCommonLabel::breath_tail",
-    ][::std::mem::offset_of!(_JPCommonLabel, breath_tail) - 24usize];
+    ][::std::mem::offset_of!(_JPCommonLabel, breath_tail) - 32usize];
     [
         "Offset of field: _JPCommonLabel::accent_head",
-    ][::std::mem::offset_of!(_JPCommonLabel, accent_head) - 32usize];
+    ][::std::mem::offset_of!(_JPCommonLabel, accent_head) - 40usize];
     [
         "Offset of field: _JPCommonLabel::accent_tail",
-    ][::std::mem::offset_of!(_JPCommonLabel, accent_tail) - 40usize];
+    ][::std::mem::offset_of!(_JPCommonLabel, accent_tail) - 48usize];
     [
         "Offset of field: _JPCommonLabel::word_head",
-    ][::std::mem::offset_of!(_JPCommonLabel, word_head) - 48usize];
+    ][::std::mem::offset_of!(_JPCommonLabel, word_head) - 56usize];
     [
         "Offset of field: _JPCommonLabel::word_tail",
-    ][::std::mem::offset_of!(_JPCommonLabel, word_tail) - 56usize];
+    ][::std::mem::offset_of!(_JPCommonLabel, word_tail) - 64usize];
     [
         "Offset of field: _JPCommonLabel::mora_head",
-    ][::std::mem::offset_of!(_JPCommonLabel, mora_head) - 64usize];
+    ][::std::mem::offset_of!(_JPCommonLabel, mora_head) - 72usize];
     [
         "Offset of field: _JPCommonLabel::mora_tail",
-    ][::std::mem::offset_of!(_JPCommonLabel, mora_tail) - 72usize];
+    ][::std::mem::offset_of!(_JPCommonLabel, mora_tail) - 80usize];
     [
         "Offset of field: _JPCommonLabel::phoneme_head",
-    ][::std::mem::offset_of!(_JPCommonLabel, phoneme_head) - 80usize];
+    ][::std::mem::offset_of!(_JPCommonLabel, phoneme_head) - 88usize];
     [
         "Offset of field: _JPCommonLabel::phoneme_tail",
-    ][::std::mem::offset_of!(_JPCommonLabel, phoneme_tail) - 88usize];
+    ][::std::mem::offset_of!(_JPCommonLabel, phoneme_tail) - 96usize];
     [
         "Offset of field: _JPCommonLabel::short_pause_flag",
-    ][::std::mem::offset_of!(_JPCommonLabel, short_pause_flag) - 96usize];
+    ][::std::mem::offset_of!(_JPCommonLabel, short_pause_flag) - 104usize];
 };
 pub type JPCommonLabel = _JPCommonLabel;
 extern "C" {
