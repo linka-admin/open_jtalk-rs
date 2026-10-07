@@ -161,6 +161,32 @@ impl Njd {
         unsafe { open_jtalk_sys::NJD_refresh(self.as_raw_ptr()) }
     }
 
+    /// 文字列で与えたMeCabの特徴量からノードを作る。
+    ///
+    /// [`Mecab::features`]の結果を加工してから渡すのに使う。
+    ///
+    /// # Panics
+    ///
+    /// 文字列にNUL文字が含まれているとパニックする。
+    pub fn mecab2njd_from_features(&mut self, features: &[impl AsRef<str>]) {
+        let features = features
+            .iter()
+            .map(|f| CString::new(f.as_ref()).expect("should not contain NUL"))
+            .collect::<Vec<_>>();
+        let mut ptrs = features
+            .iter()
+            .map(|f| f.as_ptr() as *mut c_char)
+            .collect::<Vec<_>>();
+        // `mecab2njd`は各文字列を複製して保持するため、呼び出し後に解放してよい
+        unsafe {
+            open_jtalk_sys::mecab2njd(
+                self.as_raw_ptr(),
+                ptrs.as_mut_ptr(),
+                ptrs.len().try_into().expect("too many features"),
+            )
+        }
+    }
+
     pub fn mecab2njd(&mut self, mecab_feature: &MecabFeature, mecab_feature_size: i32) {
         unsafe {
             open_jtalk_sys::mecab2njd(
@@ -278,6 +304,38 @@ mod tests {
         let features = vec![feature("空", "ソラ", 1, -1)];
         njd.set_features(&features);
         assert_eq!(features, njd.features());
+    }
+
+    #[rstest]
+    fn njd_mecab2njd_from_features_matches_mecab2njd() {
+        let mut mecab = ManagedResource::<Mecab>::initialize();
+        mecab
+            .load(
+                Utf8Path::new(std::env!("CARGO_MANIFEST_DIR"))
+                    .join("src/mecab/testdata/mecab_load"),
+            )
+            .unwrap();
+        assert!(mecab.analysis(text2mecab("こんにちは、ヒホです。").unwrap()));
+
+        let mut expected = ManagedResource::<Njd>::initialize();
+        expected.mecab2njd(mecab.get_feature().unwrap(), mecab.get_size());
+
+        let mut njd = ManagedResource::<Njd>::initialize();
+        njd.mecab2njd_from_features(&mecab.features());
+        assert!(!njd.features().is_empty());
+        assert_eq!(expected.features(), njd.features());
+    }
+
+    #[rstest]
+    fn njd_mecab2njd_from_features_accepts_edited_features() {
+        let mut njd = ManagedResource::<Njd>::initialize();
+        njd.mecab2njd_from_features(&["春,名詞,一般,*,*,*,*,春,ハル,ハル,1/2,C1"]);
+        let features = njd.features();
+        assert_eq!(1, features.len());
+        assert_eq!("春", features[0].string);
+        assert_eq!("ハル", features[0].pron);
+        assert_eq!(1, features[0].acc);
+        assert_eq!(2, features[0].mora_size);
     }
 
     #[rstest]

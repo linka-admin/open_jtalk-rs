@@ -109,6 +109,29 @@ impl Mecab {
         }
     }
 
+    /// 直前の解析結果の特徴量を文字列として取り出す。
+    ///
+    /// 各要素は`表層形,品詞,...`の形式。
+    pub fn features(&self) -> Vec<String> {
+        let size = self.get_size();
+        unsafe {
+            let feature = open_jtalk_sys::Mecab_get_feature(self.as_raw_ptr());
+            if feature.is_null() || size <= 0 {
+                return Vec::new();
+            }
+            (0..size as usize)
+                .map(|i| {
+                    let s = *feature.add(i);
+                    if s.is_null() {
+                        String::new()
+                    } else {
+                        std::ffi::CStr::from_ptr(s).to_string_lossy().into_owned()
+                    }
+                })
+                .collect()
+        }
+    }
+
     pub fn analysis(&mut self, str: impl AsRef<str>) -> bool {
         let str = CString::new(str.as_ref()).unwrap();
         unsafe {
@@ -191,6 +214,31 @@ mod tests {
         assert_eq!(expected, mecab.analysis(s));
         assert_ne!(0, mecab.get_size());
         assert!(mecab.get_feature_mut().is_some());
+    }
+
+    #[rstest]
+    fn mecab_features_is_empty_before_analysis() {
+        let mecab = ManagedResource::<Mecab>::initialize();
+        assert_eq!(Vec::<String>::new(), mecab.features());
+    }
+
+    #[rstest]
+    fn mecab_features_returns_feature_strings() {
+        let mut mecab = ManagedResource::<Mecab>::initialize();
+        mecab
+            .load(
+                Utf8Path::new(std::env!("CARGO_MANIFEST_DIR"))
+                    .join("src/mecab/testdata/mecab_load"),
+            )
+            .unwrap();
+        assert!(mecab.analysis(text2mecab("こんにちは、ヒホです。").unwrap()));
+        let features = mecab.features();
+        assert_eq!(mecab.get_size() as usize, features.len());
+        let surfaces = features
+            .iter()
+            .map(|f| f.split(',').next().unwrap())
+            .collect::<String>();
+        assert_eq!("こんにちは、ヒホです。", surfaces);
     }
 
     #[rstest]
