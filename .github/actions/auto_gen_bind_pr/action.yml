@@ -42,17 +42,12 @@ runs:
     - name: check
       run: git status -s | grep -E "M|A"
       shell: bash
-    - name: create_pr
+    - name: upload generated bindings
       if: success()
-      id: cpr
-      uses: peter-evans/create-pull-request@v4
+      uses: actions/upload-artifact@v4
       with:
-        commit-message: Automated generate bindings for ${{ inputs.triple }}
-        branch: ${{ steps.extract_branch.outputs.branch }}_auto_gen_bindings_${{ inputs.triple }}
-        delete-branch: true
-        title: Automated generate bindings for ${{ inputs.triple }}
-        body: |
-          Automated generate bindings for ${{ inputs.triple }}
+        name: bindings-${{ inputs.triple }}
+        path: crates/open_jtalk-sys/src/generated
     - name: do nothing
       if: failure()
       run: |
