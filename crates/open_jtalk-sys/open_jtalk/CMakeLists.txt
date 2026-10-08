@@ -5,7 +5,7 @@ include(FetchContent)
 FetchContent_Declare(
   openjtalk
   GIT_REPOSITORY https://github.com/linka-admin/open_jtalk.git
-  GIT_TAG f84f40d8eb7510d498f4094ab17b3699c85776bb # tsukumijima/open_jtalk 1.11 branch
+  GIT_TAG fe71dac3206d2d897fa6c9d8781f9761bd9026b2 # tsukumijima/open_jtalk 1.11 branch
   SOURCE_SUBDIR src)
 FetchContent_MakeAvailable(openjtalk)
 
