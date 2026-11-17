@@ -51,7 +51,8 @@ mod tests {
     #[rstest]
     #[case("", Ok("".into()))]
     #[case("あいうえお", Ok("あいうえお".into()))]
-    #[case("あいう\nえお", Ok("あいうえお".into()))]
+    // tsukumijima/open_jtalk b3dda0f: a line break or tab becomes a full-width space (a word boundary)
+    #[case("あいう\nえお", Ok("あいう\u{3000}えお".into()))]
     fn text2mecab_works(
         #[case] input: impl AsRef<str>,
         #[case] expected: Result<String, Text2MecabError>,
